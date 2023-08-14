@@ -2,8 +2,11 @@
 import AddTask from "@/components/AddTask";
 import Header from "@/components/Header";
 import { useEffect, useState } from "react";
-import { Spinner, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { ITask } from "@types";
+import NoTask from "@components/NoTask";
+import Task from "@components/Task";
+import Loading from "@components/Loading";
 
 export default function Home() {
   const [task, setTask] = useState<string>("");
@@ -32,6 +35,38 @@ export default function Home() {
     }
   };
 
+  const handleCompleteTask = async (id: string) => {
+    try {
+      const response = await fetch(`api/task/complete/${id}`, {
+        method: "PATCH",
+      });
+      if (response.ok) {
+        fetchTask();
+      } else {
+        console.log("Error response handleCompleteTask");
+      }
+    } catch (error) {
+      console.log("error handleCompleteTask :>> ", error);
+    }
+  };
+
+  const handleDeleteTask = async (id: string) => {
+    try {
+      const response = await fetch(`/api/task/delete/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setTaskList((prevTask) =>
+          prevTask.filter((task: ITask) => task._id !== id)
+        );
+      } else {
+        console.log("Error response handleDeleteTask");
+      }
+    } catch (error) {
+      console.log("error handleDeleteTask :>> ", error);
+    }
+  };
+
   const fetchTask = async () => {
     try {
       const response = await fetch("/api/task/all", {
@@ -53,22 +88,31 @@ export default function Home() {
   return (
     <>
       <Header />
-      <AddTask
-        task={task}
-        setTask={setTask}
-        handleCreateTask={handleCreateTask}
-      />
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <Flex direction="column" alignItems="center">
-          {taskList.length > 0 ? (
-            taskList.map((task: ITask) => <p key={task._id}>{task.task}</p>)
-          ) : (
-            <></>
-          )}
-        </Flex>
-      )}
+      <Flex direction="column" p="2rem">
+        <AddTask
+          task={task}
+          setTask={setTask}
+          handleCreateTask={handleCreateTask}
+        />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <Flex direction="column" p="2rem">
+            {taskList.length > 0 ? (
+              taskList.map((task: ITask) => (
+                <Task
+                  key={task._id}
+                  task={task}
+                  handleCompleteTask={handleCompleteTask}
+                  handleDeleteTask={handleDeleteTask}
+                />
+              ))
+            ) : (
+              <NoTask />
+            )}
+          </Flex>
+        )}
+      </Flex>
     </>
   );
 }

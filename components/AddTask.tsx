@@ -10,6 +10,7 @@ const AddTask = ({ task, setTask, handleCreateTask }: AddTaskProps) => {
         size="lg"
         onChange={(e) => setTask(e.target.value)}
         value={task}
+        onKeyDown={handleCreateTask}
       ></Input>
       <Button colorScheme="twitter" size="lg" onClick={handleCreateTask}><SmallAddIcon /></Button>
     </Flex>
