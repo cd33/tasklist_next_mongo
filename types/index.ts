@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface AddTaskProps {
   task: string;
   setTask: (task: string) => void;
@@ -20,4 +22,8 @@ export interface ITaskRequestParams {
   params: {
     id: string;
   };
+}
+
+export interface LayoutProps {
+  children: ReactNode;
 }
